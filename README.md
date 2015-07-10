@@ -2,7 +2,7 @@
 jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
 
 ## Usage
-    $("table").stickyHooters({});
+    $("table").stickyHooters();
 
     $("table").stickyHooters({
         bodySelector: '.list-body',            // default is 'tbody'
