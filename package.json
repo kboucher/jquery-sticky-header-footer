@@ -1,54 +1,47 @@
 {
-  "name": "jquery-boilerplate",
-  "version": "3.5.0",
-  "description": "A jump-start for jQuery plugins development.",
+  "name": "jquery-sticky-hooters",
+  "version": "0.2.0",
+  "description": "jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.",
   "keywords": [
     "jquery-plugin",
     "jquery",
-    "boilerplate",
-    "plugins"
+    "ui",
+    "sticky"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jquery-boilerplate/jquery-boilerplate.git"
+    "url": "https://github.com/kboucher/jquery-sticky-hooters.git"
   },
   "bugs": {
-    "url": "https://github.com/jquery-boilerplate/jquery-boilerplate/issues"
+    "url": "https://github.com/kboucher/jquery-sticky-hooters/issues"
   },
   "author": {
-    "name": "Zeno Rocha",
-    "email": "zno.rocha@gmail.com",
-    "url": "https://github.com/zenorocha"
+    "name": "Kevin Boucher",
+    "email": "kevin@kevinboucher.com",
+    "url": "https://github.com/kboucher"
   },
-  "homepage": "http://jqueryboilerplate.com",
+  "homepage": "https://github.com/kboucher",
   "contributors": [
     {
-      "name": "Zeno Rocha",
-      "email": "zno.rocha@gmail.com",
-      "url": "https://github.com/zenorocha"
-    },
-    {
-      "name": "Addy Osmani",
-      "email": "addyosmani@gmail.com",
-      "url": "https://github.com/addyosmani"
-    },
-    {
-      "name": "Helder Santana",
-      "email": "heldr@me.com",
-      "url": "https://github.com/heldr"
+      "name": "Kevin Boucher",
+      "email": "kevin@kevinboucher.com",
+      "url": "https://github.com/kboucher"
     }
   ],
   "license": "MIT",
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-cli": "~0.1.13",
-    "grunt-contrib-coffee": "^0.12.0",
     "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-copy": "^0.8.0",
     "grunt-contrib-jshint": "^0.11.0",
     "grunt-contrib-uglify": "^0.8.0",
-    "grunt-contrib-watch": "^0.6.1"
+    "grunt-contrib-watch": "^0.6.1",
+    "http-server": "^0.8.0"
   },
   "scripts": {
-    "test": "grunt travis --verbose"
+    "test": "grunt travis --verbose",
+    "build": "grunt build",
+    "start": "http-server demo"
   }
 }

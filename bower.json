@@ -1,18 +1,17 @@
 {
-	"name": "jquery-boilerplate",
-	"version": "3.5.0",
-	"homepage": "http://jqueryboilerplate.com",
-	"authors": [
-		"Zeno Rocha <hi@zenorocha.com>"
-	],
-	"description": "A jump-start for jQuery plugins development.",
-	"main": "src/jquery.boilerplate.js",
-	"keywords": [
-		"jquery",
-		"plugin",
-		"boilerplate",
-		"jquery-plugin",
-		"jquery-boilerplate"
-	],
-	"license": "MIT"
+    "name": "jquery-sticky-hooters",
+    "version": "0.2.0",
+    "homepage": "http://jqueryboilerplate.com",
+    "authors": [
+        "Kevin Boucher <kevin@kevinboucher.com>"
+    ],
+    "description": "jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.",
+    "main": "src/jquery.stickyHooters.js",
+    "keywords": [
+        "jquery-plugin",
+        "jquery",
+        "ui",
+        "sticky"
+    ],
+    "license": "MIT"
 }

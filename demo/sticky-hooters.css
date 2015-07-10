@@ -1,0 +1,66 @@
+/*
+ * Demo styles (not required)
+ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+h1 {
+    font-size: 3.14rem;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.container {
+    margin: 30px auto;
+    width: 600px;
+}
+
+.header {
+    margin-bottom: 60px;
+}
+
+.additional-content {
+    margin: 8rem 0;
+}
+
+.citation {
+    color: #999;
+    font-size: 3.14em;
+    font-style: italic;
+    margin: 30px 60px;
+    text-align: center;
+}
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table td,
+.table th {
+    background: #fff;
+    padding: 15px;
+}
+
+.table th {
+    border-bottom: solid #999 2px;
+    font-weight: bold;
+}
+
+.table tbody td {
+    border-bottom: solid #ccc 1px;
+}
+
+.table tfoot td {
+    border-top: solid #999 2px;
+}
