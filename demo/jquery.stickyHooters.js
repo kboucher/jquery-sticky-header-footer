@@ -1,5 +1,5 @@
 /*
- *  jquery-sticky-hooters - v0.2.0
+ *  jquery.stickyHooters - v0.2.0
  *  jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
  *  https://github.com/kboucher
  *
@@ -157,7 +157,7 @@
                         bottom: isFooter ? this.settings.bottom : 'auto',
                         position: 'fixed',
                         top: !isFooter ? this.settings.top : 'auto',
-                        'z-index': 9999,
+                        'z-index': 1000,
                     }).addClass(wrapperClasses.join(' '))
                 )
                 .wrap(function () {

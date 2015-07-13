@@ -149,7 +149,7 @@
                         bottom: isFooter ? this.settings.bottom : 'auto',
                         position: 'fixed',
                         top: !isFooter ? this.settings.top : 'auto',
-                        'z-index': 9999,
+                        'z-index': 1000,
                     }).addClass(wrapperClasses.join(' '))
                 )
                 .wrap(function () {
