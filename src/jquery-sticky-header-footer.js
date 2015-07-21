@@ -1,14 +1,14 @@
 /**
- *  jquery-sticky-hooters v0.1.0
+ *  jquery-sticky-header-footer v0.1.0
  *  Lightweight jQuery plugin providing sticky header and footer functionality for tables and lists.
  *
- *  @module     jquery-sticky-hooters
+ *  @module     jquery-sticky-header-footer
  *  @extends    jQuery
  *
  *  @example
  *      // Configuration object is optional if setting up a table
  *      // with a sticky header and sticky footer.
- *      $(<your-list-container>).stickyHooters({
+ *      $(<your-list-container>).stickyHeaderFooter({
  *          // these are in the context of <your-list-container>
  *          bodySelector: '<body-selector>',       // {String} default is 'tbody'
  *          footerSelector: '<footer-selector>',   // {String} default is 'tfoot'
@@ -24,7 +24,7 @@
     'use strict';
 
     // Defaults and constants
-    var pluginName = 'stickyHooters',
+    var pluginName = 'stickyHeaderFooter',
         defaults = {
             bodySelector: 'tbody',
             footerSelector: 'tfoot',
@@ -33,10 +33,10 @@
             bottom: '0'
         },
         classNames = {
-            outerWrapper: 'sticky-hooters_wrapper',
-            innerWrapper: 'sticky-hooters_sticky-wrapper',
-            innerWrapperHead: 'sticky-hooters_sticky-header',
-            innerWrapperFoot: 'sticky-hooters_sticky-footer',
+            outerWrapper: 'sticky-header-footer_wrapper',
+            innerWrapper: 'sticky-header-footer_sticky-wrapper',
+            innerWrapperHead: 'sticky-header-footer_sticky-header',
+            innerWrapperFoot: 'sticky-header-footer_sticky-footer',
         },
         swapNodes = function(a, b) {
             var aParent = a.parentNode;
@@ -68,8 +68,8 @@
             };
         };
 
-    // StickyHooters constructor
-    function StickyHooters(element, options) {
+    // StickyHeaderFooter constructor
+    function StickyHeaderFooter(element, options) {
         this.element = element;
         this.settings = $.extend({}, defaults, options);
 
@@ -90,7 +90,7 @@
         this.init();
     }
 
-    $.extend(StickyHooters.prototype, {
+    $.extend(StickyHeaderFooter.prototype, {
 
         /**
         *  Initializes DOM and sets event listeners.
@@ -105,18 +105,18 @@
 
                 // Clone, wrap, decorate and store references to header/footer.
                 if (this.footerElement) {
-                    this.setupHooter(true);
+                    this.setupHeaderFooter(true);
                     this.footerElement.isFooter = true;
                 }
                 if (this.headerElement) {
-                    this.setupHooter();
+                    this.setupHeaderFooter();
                 }
 
                 /*
                     Add throttled scroll event listener and trigger scroll
                     event to initialize sticky header/footer positions.
                 */
-                this._scrollHandler = throttle(this.watchHooters.bind(this), 40);
+                this._scrollHandler = throttle(this.watchHeaderFooter.bind(this), 40);
                 window.addEventListener('scroll', this._scrollHandler);
                 window.dispatchEvent(new Event('scroll'));
             }
@@ -125,10 +125,10 @@
         /**
         *  Decorates DOM elements to support sticky functionality.
         *
-        *  @method setupHooter
+        *  @method setupHeaderFooter
         *  @param {Boolean} Is this a sticky footer?
         */
-        setupHooter: function(isFooter) {
+        setupHeaderFooter: function(isFooter) {
             var insertAction = isFooter ? 'insertAfter' : 'insertBefore',
                 element = isFooter ? 'footerElement' : 'headerElement',
                 wrapperClasses = [
@@ -138,7 +138,7 @@
 
             /**
                 1. Create and store header/footer clone
-                2. Wrap with sticky-hooters DIV
+                2. Wrap with sticky-header-footer DIV
                 3. Conditionally wrap with TABLE (THEAD/TFOOT only)
                 5. Hide clone
                 6. Append to DOM
@@ -168,7 +168,7 @@
         *  Swaps clone and source elements and displays clone container.
         *  Also sets width to overcome deficiency when element is
         *  instantiated in a non-visible state.
-        *  ("0px" width is applied in setupHooter().)
+        *  ("0px" width is applied in setupHeaderFooter().)
         *
         *  @method stick
         *  @param {HTMLElement} The header or footer item to be stuck.
@@ -176,7 +176,7 @@
         stick: function(elem) {
             var settings = this.settings,
                 selector = elem.isFooter ? settings.footerSelector : settings.headerSelector,
-                width = $(elem).parents('.sticky-hooters_wrapper:first').width() + 'px';
+                width = $(elem).parents('.sticky-header-footer_wrapper:first').width() + 'px';
 
             swapNodes(
                 elem,
@@ -223,10 +223,10 @@
             if (footer.isStuck) {
 
                 /**
-                    Unstick this sticky hooter's footer element if:
+                    Unstick this sticky-header-footer's footer element if:
                         1. Footer has moved above bottom of viewport, OR ...
                         2. Header has scrolled to the footer, OR ...
-                        3. Sticky hooter element is no longer visible in the viewport
+                        3. Sticky Header Footer element is no longer visible in the viewport
                  */
                  if (bodyRect.bottom < viewHeight - footAdjust - footRect.height ||
                      bodyRect.top > viewHeight - footAdjust ||
@@ -236,10 +236,10 @@
             } else {
 
                 /**
-                    Stick this sticky hooter's footer element if:
+                    Stick this sticky-header-footer's footer element if:
                         1. Footer element is below bottom of the viewport, AND ...
                         2. Header is above sticky footer, AND ...
-                        3. Sticky hooter element is visible in the viewport
+                        3. Sticky Header Footer element is visible in the viewport
                  */
                 if (bodyRect.bottom > viewHeight - footAdjust - footRect.height &&
                     bodyRect.top < viewHeight - footAdjust &&
@@ -264,7 +264,7 @@
             if (header.isStuck) {
 
                 /**
-                    Unstick this sticky hooter's header element if:
+                    Unstick this sticky-header-footer's header element if:
                         1. Top of the header is below the top of the sticky header, OR ...
                         2. Footer is under the sticky header
                  */
@@ -275,7 +275,7 @@
             } else {
 
                 /**
-                    Stick this sticky hooter's header element if:
+                    Stick this sticky-header-footer's header element if:
                         1. Top of the header is at the top of the viewport (or custom position), AND ...
                         2. Footer is below the bottom of the potential sticky header
                  */
@@ -290,11 +290,11 @@
          *  Delegates scroll event handling to specific header
          *  and footer DOM manipulation methods.
          *
-         *  @method watchHooters
+         *  @method watchHeaderFooter
          *  @parameter {UIEvent} jQuery scroll Event object with injected
          *                       instance reference.
          */
-        watchHooters: function(/*event*/) {
+        watchHeaderFooter: function(/*event*/) {
             if (!!this.footerElement) {
                 this.watchFooter(this.footerElement);
             }
@@ -323,7 +323,7 @@
     $.fn[pluginName] = function(options) {
         return this.each(function() {
             if (!$.data(this, 'plugin_' + pluginName)) {
-                $.data(this, 'plugin_' + pluginName, new StickyHooters(this, options));
+                $.data(this, 'plugin_' + pluginName, new StickyHeaderFooter(this, options));
             }
         });
     };

@@ -23,22 +23,22 @@ module.exports = function(grunt) {
                 banner: "<%= meta.banner %>"
             },
             dist: {
-                src: ["src/jquery.stickyHooters.js"],
-                dest: "dist/jquery.stickyHooters.js"
+                src: ["src/jquery-sticky-header-footer.js"],
+                dest: "dist/jquery-sticky-header-footer.js"
             }
         },
 
         // Copy definitions
         copy: {
             main: {
-                src: ['dist/jquery.stickyHooters.js'],
-                dest: 'demo/jquery.stickyHooters.js'
+                src: ['dist/jquery-sticky-header-footer.js'],
+                dest: 'demo/jquery-sticky-header-footer.js'
             }
         },
 
         // Lint definitions
         jshint: {
-            files: ["src/jquery.stickyHooters.js"],
+            files: ["src/jquery-sticky-header-footer.js"],
             options: {
                 jshintrc: ".jshintrc"
             }
@@ -47,8 +47,8 @@ module.exports = function(grunt) {
         // Minify definitions
         uglify: {
             my_target: {
-                src: ["dist/jquery.stickyHooters.js"],
-                dest: "dist/jquery.stickyHooters.min.js"
+                src: ["dist/jquery-sticky-header-footer.js"],
+                dest: "dist/jquery-sticky-header-footer.min.js"
             },
             options: {
                 banner: "<%= meta.banner %>"

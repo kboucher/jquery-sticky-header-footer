@@ -1,12 +1,12 @@
 {
-    "name": "jquery.stickyHooters",
+    "name": "jquery-sticky-header-footer",
     "version": "0.2.1",
     "homepage": "http://jqueryboilerplate.com",
     "authors": [
         "Kevin Boucher <kevin@kevinboucher.com>"
     ],
     "description": "jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.",
-    "main": "src/jquery.stickyHooters.js",
+    "main": "src/jquery-sticky-header-footer.js",
     "keywords": [
         "jquery-plugin",
         "jquery",
