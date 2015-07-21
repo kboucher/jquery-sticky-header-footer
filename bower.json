@@ -1,7 +1,7 @@
 {
     "name": "jquery-sticky-header-footer",
-    "version": "0.2.1",
-    "homepage": "http://jqueryboilerplate.com",
+    "version": "1.0.0",
+    "homepage": "https://github.com/kboucher/jquery-sticky-header-footer",
     "authors": [
         "Kevin Boucher <kevin@kevinboucher.com>"
     ],
