@@ -74,6 +74,17 @@
                     fn.apply(context, args);
                 }
             };
+        },
+        debounce = function(fn, delay) {
+            var timer = null;
+
+            return function () {
+                var context = this, args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    fn.apply(context, args);
+                }, delay);
+            };
         };
 
     // StickyHeaderFooter constructor
@@ -121,11 +132,15 @@
                 }
 
                 /*
-                    Add throttled scroll event listener and trigger scroll
-                    event to initialize sticky header/footer positions.
+                    * add throttled scroll event listener
+                    * add debounced scroll event listener
+                      (ensure we fire one more time when scroll ends)
+                    * trigger scroll event to initialize sticky header/footer positions
                 */
-                this._scrollHandler = throttle(this.watchHeaderFooter.bind(this), 40);
+                this._scrollHandler = throttle(this.watchHeaderFooter.bind(this), 132);
+                this._scrollStopHandler = debounce(this.watchHeaderFooter.bind(this), 133);
                 window.addEventListener('scroll', this._scrollHandler);
+                window.addEventListener('scroll', this._scrollStopHandler);
                 window.dispatchEvent(new Event('scroll'));
             }
         },
@@ -321,6 +336,7 @@
          */
         tearDown: function() {
             window.removeEventListener('scroll', this._scrollHandler);
+            window.removeEventListener('scroll', this._scrollStopHandler);
         }
     });
 
