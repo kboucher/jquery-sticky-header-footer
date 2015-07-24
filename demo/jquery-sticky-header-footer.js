@@ -1,5 +1,5 @@
 /*
- *  jquery-sticky-header-footer - v1.0.0
+ *  jquery-sticky-header-footer - v1.1.0
  *  jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
  *  https://github.com/kboucher
  *
@@ -7,7 +7,7 @@
  *  Under MIT License
  */
 /**
- *  jquery-sticky-header-footer v0.1.0
+ *  jquery-sticky-header-footer
  *  Lightweight jQuery plugin providing sticky header and footer functionality for tables and lists.
  *
  *  @module     jquery-sticky-header-footer
@@ -117,6 +117,8 @@
         *  @method init
         */
         init: function() {
+            var throttleRate = 66;
+
             // Add DOM wrapper to provide known reference point
             $(this.element).wrap('<div class="' + classNames.outerWrapper + '"></div>');
 
@@ -131,26 +133,46 @@
                     this.setupHeaderFooter();
                 }
 
-                /*
-                    * add throttled scroll event listener
-                    * add debounced scroll event listener
-                      (ensure we fire one more time when scroll ends)
-                    * trigger scroll event to initialize sticky header/footer positions
-                */
-                this._scrollHandler = throttle(this.watchHeaderFooter.bind(this), 132);
-                this._scrollStopHandler = debounce(this.watchHeaderFooter.bind(this), 133);
-                window.addEventListener('scroll', this._scrollHandler);
-                window.addEventListener('scroll', this._scrollStopHandler);
-                window.dispatchEvent(new Event('scroll'));
+                /**
+                 *   1. Store and add scroll event listener
+                 *      (Storing before assigning seems to uncover a Chrome repaint/redraw bug.)
+                 *   2. Trigger scroll event (initialize sticky header/footer positions)
+                 */
+                document.addEventListener(
+                    'scroll',
+                    this._scrollHandler = throttle(this.watchHeaderFooter.bind(this), throttleRate)
+                );
+
+                /**
+                 *  Fix for Chrome rendering bug (force repaint)
+                 *
+                 *  Sometimes in Chrome it is possible to have the sticky header still stuck to
+                 *  the top of the viewport even though the real header is well below it in the screen.
+                 *
+                 *  The obvious assumption is that there is an issue with the throttling that is causing
+                 *  that element not to be hidden when the real header scrolls back into view. However,
+                 *  inspecting the element will show that the CSS is in fact updated (has display:none).
+                 *
+                 *  The following code is a workaround for this Chrome issue and essentially forces a
+                 *  repaint when scrolling has stopped. (includes a line in tearDown())
+                 */
+                document.addEventListener(
+                    'scroll',
+                    this._scrollStopHandler = debounce(function() {
+                        $('.'.concat(classNames.innerWrapper)).css('transform', 'translateZ(0)');
+                    }, throttleRate)
+                );
+
+                document.dispatchEvent(new Event('scroll'));
             }
         },
 
         /**
-        *  Decorates DOM elements to support sticky functionality.
-        *
-        *  @method setupHeaderFooter
-        *  @param {Boolean} Is this a sticky footer?
-        */
+         *  Decorates DOM elements to support sticky functionality.
+         *
+         *  @method setupHeaderFooter
+         *  @param {Boolean} Is this a sticky footer?
+         */
         setupHeaderFooter: function(isFooter) {
             var insertAction = isFooter ? 'insertAfter' : 'insertBefore',
                 element = isFooter ? 'footerElement' : 'headerElement',
@@ -199,7 +221,7 @@
         stick: function(elem) {
             var settings = this.settings,
                 selector = elem.isFooter ? settings.footerSelector : settings.headerSelector,
-                width = $(elem).parents('.sticky-header-footer_wrapper:first').width() + 'px';
+                width = $(elem).parents('.'.concat(classNames.outerWrapper + ':first')).width() + 'px';
 
             swapNodes(
                 elem,
@@ -327,15 +349,18 @@
             }
         },
 
-
         /**
          *  Handle any required tear down.
-         *   - Remove scroll event handler
+         *   - Remove scroll event handlers
          *
          *  @method tearDown
          */
         tearDown: function() {
             window.removeEventListener('scroll', this._scrollHandler);
+
+            /**
+              *  Fix for Chrome rendering bug (see above)
+              */
             window.removeEventListener('scroll', this._scrollStopHandler);
         }
     });
