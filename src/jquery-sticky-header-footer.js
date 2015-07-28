@@ -155,7 +155,14 @@
                     }, throttleRate)
                 );
 
-                document.dispatchEvent(new Event('scroll'));
+                /**
+                 *  Trigger scroll event to initialize sticky header/footer positions.
+                 *
+                 *  - Wrapped in try block to overcome bug in IE (RET-12449)
+                 */
+                try {
+                    document.dispatchEvent(new Event('scroll'));
+                } catch (e) {}
             }
         },
 

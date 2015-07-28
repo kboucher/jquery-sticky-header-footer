@@ -1,5 +1,5 @@
 /*
- *  jquery-sticky-header-footer - v1.1.0
+ *  jquery-sticky-header-footer - v1.2.0
  *  jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
  *  https://github.com/kboucher
  *
@@ -163,7 +163,14 @@
                     }, throttleRate)
                 );
 
-                document.dispatchEvent(new Event('scroll'));
+                /**
+                 *  Trigger scroll event to initialize sticky header/footer positions.
+                 *
+                 *  - Wrapped in try block to overcome bug in IE (RET-12449)
+                 */
+                try {
+                    document.dispatchEvent(new Event('scroll'));
+                } catch (e) {}
             }
         },
 
