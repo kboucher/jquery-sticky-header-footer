@@ -1,3 +1,11 @@
+/*
+ *  jquery-sticky-header-footer - v1.2.0
+ *  jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
+ *  https://github.com/kboucher
+ *
+ *  Made by Kevin Boucher
+ *  Under MIT License
+ */
 /**
  *  jquery-sticky-header-footer
  *  Lightweight jQuery plugin providing sticky header and footer functionality for tables and lists.
@@ -30,7 +38,8 @@
             footerSelector: 'tfoot',
             headerSelector: 'thead',
             top: '0',
-            bottom: '0'
+            bottom: '0',
+            zIndex: 10
         },
         classNames = {
             outerWrapper: 'sticky-header-footer_wrapper',
@@ -193,7 +202,7 @@
                         bottom: isFooter ? this.settings.bottom : 'auto',
                         position: 'fixed',
                         top: !isFooter ? this.settings.top : 'auto',
-                        'z-index': 1000,
+                        'z-index': this.settings.zIndex,
                     }).addClass(wrapperClasses.join(' '))
                 )
                 .wrap(function () {
