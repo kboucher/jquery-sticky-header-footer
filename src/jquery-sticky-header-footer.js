@@ -162,6 +162,11 @@
                 ).parents('.' + classNames.innerWrapper)
                 .css('display', 'none')
                 [insertAction](this.element)[0];
+                
+                var me = this;
+				$( window ).resize(function(){
+					$(me[element].stickyClone).width($(me.element).parent().width());
+				});
         },
 
         /**
