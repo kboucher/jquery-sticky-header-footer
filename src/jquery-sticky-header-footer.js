@@ -47,6 +47,31 @@
             innerWrapperHead: 'sticky-header-footer_sticky-header',
             innerWrapperFoot: 'sticky-header-footer_sticky-footer',
         },
+        methods = {
+
+            /**
+                Handle any required tear down.
+                 - Remove scroll event handlers
+
+                @method tearDown
+             */
+            tearDown: function() {
+                var element = this.first();
+
+                window.removeEventListener('scroll', this._scrollHandler);
+
+                /**
+                  *  Fix for Chrome rendering bug (see above)
+                  */
+                window.removeEventListener('scroll', this._scrollStopHandler);
+
+                /**
+                    Remove added DOM elements and plugin data
+                 */
+                $('.' + classNames.outerWrapper).before(element).remove();
+                element.removeData('plugin_' + pluginName);
+            }
+        },
         swapNodes = function(a, b) {
             var aParent = a.parentNode;
             var aSibling = a.nextSibling === b ? a : a.nextSibling;
@@ -184,6 +209,7 @@
         setupHeaderFooter: function(isFooter) {
             var insertAction = isFooter ? 'insertAfter' : 'insertBefore',
                 element = isFooter ? 'footerElement' : 'headerElement',
+                colgroup = $(this.element).find('colgroup:first'),
                 wrapperClasses = [
                     classNames.innerWrapper,
                     isFooter ? classNames.innerWrapperFoot : classNames.innerWrapperHead
@@ -215,6 +241,16 @@
                 ).parents('.' + classNames.innerWrapper)
                 .css('display', 'none')
                 [insertAction](this.element)[0];
+
+            /**
+                Support use of colgroup to maintain cell sizes on cloned and
+                fixed header/footer elements.
+
+                * Valid with tables only
+             */
+            if (colgroup) {
+                colgroup.clone(false).appendTo($(this[element].stickyClone).find('table'));
+            }
         },
 
         /**
@@ -355,21 +391,6 @@
             if (!!this.headerElement) {
                 this.watchHeader(this.headerElement);
             }
-        },
-
-        /**
-         *  Handle any required tear down.
-         *   - Remove scroll event handlers
-         *
-         *  @method tearDown
-         */
-        tearDown: function() {
-            window.removeEventListener('scroll', this._scrollHandler);
-
-            /**
-              *  Fix for Chrome rendering bug (see above)
-              */
-            window.removeEventListener('scroll', this._scrollStopHandler);
         }
     });
 
@@ -377,12 +398,16 @@
         Lightweight wrapper around the constructor,
         preventing multiple instantiations.
     */
-    $.fn[pluginName] = function(options) {
-        return this.each(function() {
-            if (!$.data(this, 'plugin_' + pluginName)) {
-                $.data(this, 'plugin_' + pluginName, new StickyHeaderFooter(this, options));
-            }
-        });
+    $.fn[pluginName] = function(methodOrOptions) {
+        if (methods[methodOrOptions]) {
+            return methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else {
+            return this.each(function() {
+                if (!$.data(this, 'plugin_' + pluginName)) {
+                    $.data(this, 'plugin_' + pluginName, new StickyHeaderFooter(this, methodOrOptions));
+                }
+            });
+        }
     };
 
 })(jQuery, window, document);
