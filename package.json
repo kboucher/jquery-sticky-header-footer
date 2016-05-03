@@ -1,6 +1,6 @@
 {
   "name": "jquery-sticky-header-footer",
-  "version": "1.0.1",
+  "version": "1.2.2",
   "description": "jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.",
   "keywords": [
     "jquery-plugin",

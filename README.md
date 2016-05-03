@@ -12,6 +12,8 @@ jQuery plugin that dynamically sticks content headers and footers to the top and
         top: '60px'                            // default is '0'
     });
 
+    $("table").stickyHeaderFooter('tearDown'); // call tearDown method to remove added elements, jquery data and event listeners
+
 ## How does it work?
 Sticky Header Footer makes a clone of the desired sticky header and/or footer and places it in a DIV above or below the original stuck component. Clones are used in order to simplify maintaining layout (especially with tables). The clones are swapped when stuck and unstuck to ensure DOM updates to the header and/or footer are visible.
 
@@ -20,6 +22,11 @@ Sticky Header Footer makes a clone of the desired sticky header and/or footer an
 For best results when applying Sticky Header Footer to a table, pass the table itself as the element to be processed.
 
     <table>                                         <!-- Pass this element to the plugin -->
+        <colgroup>                                  <!-- Use colgroup to maintain th layout -->
+            <col style="width: 33.3%">
+            <col style="width: 33.3%">
+            <col style="width: 33.3%">
+        </colgroup>
         <thead>                                     <!-- Header element (by default) -->
             <tr>
                 <th>Header text</th>

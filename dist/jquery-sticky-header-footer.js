@@ -1,5 +1,5 @@
 /*
- *  jquery-sticky-header-footer - v1.0.1
+ *  jquery-sticky-header-footer - v1.2.2
  *  jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
  *  https://github.com/kboucher
  *
@@ -7,7 +7,7 @@
  *  Under MIT License
  */
 /**
- *  jquery-sticky-header-footer v1.0.1
+ *  jquery-sticky-header-footer
  *  Lightweight jQuery plugin providing sticky header and footer functionality for tables and lists.
  *
  *  @module     jquery-sticky-header-footer
@@ -38,13 +38,39 @@
             footerSelector: 'tfoot',
             headerSelector: 'thead',
             top: '0',
-            bottom: '0'
+            bottom: '0',
+            zIndex: 10
         },
         classNames = {
             outerWrapper: 'sticky-header-footer_wrapper',
             innerWrapper: 'sticky-header-footer_sticky-wrapper',
             innerWrapperHead: 'sticky-header-footer_sticky-header',
             innerWrapperFoot: 'sticky-header-footer_sticky-footer',
+        },
+        methods = {
+
+            /**
+                Handle any required tear down.
+                 - Remove scroll event handlers
+
+                @method tearDown
+             */
+            tearDown: function() {
+                var element = this.first();
+
+                window.removeEventListener('scroll', this._scrollHandler);
+
+                /**
+                 *  Fix for Chrome rendering bug (see above)
+                 */
+                window.removeEventListener('scroll', this._scrollStopHandler);
+
+                /**
+                    Remove added DOM elements and plugin data
+                 */
+                $('.' + classNames.outerWrapper).before(element).remove();
+                element.removeData('plugin_' + pluginName);
+            }
         },
         swapNodes = function(a, b) {
             var aParent = a.parentNode;
@@ -69,10 +95,23 @@
                         last = now;
                         fn.apply(context, args);
                     }, threshhold);
-                } else {
+                }
+                else {
                     last = now;
                     fn.apply(context, args);
                 }
+            };
+        },
+        debounce = function(fn, delay) {
+            var timer = null;
+
+            return function() {
+                var context = this,
+                    args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function() {
+                    fn.apply(context, args);
+                }, delay);
             };
         };
 
@@ -94,7 +133,6 @@
         this._defaults = defaults;
         this._name = pluginName;
         this._scrollHandler = null;
-        this._resizeHandler = null;
 
         this.init();
     }
@@ -107,6 +145,8 @@
          *  @method init
          */
         init: function() {
+            var throttleRate = 66;
+
             // Add DOM wrapper to provide known reference point
             $(this.element).wrap('<div class="' + classNames.outerWrapper + '"></div>');
 
@@ -121,15 +161,45 @@
                     this.setupHeaderFooter();
                 }
 
-                /*
-                    Add throttled scroll event listener and trigger scroll
-                    event to initialize sticky header/footer positions.
-                */
-                this._scrollHandler = throttle(this.watchScroll.bind(this), 40);
-                this._resizeHandler = throttle(this.watchResize.bind(this), 40);
-                window.addEventListener('scroll', this._scrollHandler);
-                window.addEventListener('resize', this._resizeHandler);
-                window.dispatchEvent(new Event('scroll'));
+                /**
+                 *   1. Store and add scroll event listener
+                 *      (Storing before assigning seems to uncover a Chrome repaint/redraw bug.)
+                 *   2. Trigger scroll event (initialize sticky header/footer positions)
+                 */
+                document.addEventListener(
+                    'scroll',
+                    this._scrollHandler = throttle(this.watchHeaderFooter.bind(this), throttleRate)
+                );
+
+                /**
+                 *  Fix for Chrome rendering bug (force repaint)
+                 *
+                 *  Sometimes in Chrome it is possible to have the sticky header still stuck to
+                 *  the top of the viewport even though the real header is well below it in the screen.
+                 *
+                 *  The obvious assumption is that there is an issue with the throttling that is causing
+                 *  that element not to be hidden when the real header scrolls back into view. However,
+                 *  inspecting the element will show that the CSS is in fact updated (has display:none).
+                 *
+                 *  The following code is a workaround for this Chrome issue and essentially forces a
+                 *  repaint when scrolling has stopped. (includes a line in tearDown())
+                 */
+                document.addEventListener(
+                    'scroll',
+                    this._scrollStopHandler = debounce(function() {
+                        $('.'.concat(classNames.innerWrapper)).css('transform', 'translateZ(0)');
+                    }, throttleRate)
+                );
+
+                /**
+                 *  Trigger scroll event to initialize sticky header/footer positions.
+                 *
+                 *  - Wrapped in try block to overcome bug in IE (RET-12449)
+                 */
+                try {
+                    document.dispatchEvent(new Event('scroll'));
+                }
+                catch (e) {}
             }
         },
 
@@ -142,6 +212,7 @@
         setupHeaderFooter: function(isFooter) {
             var insertAction = isFooter ? 'insertAfter' : 'insertBefore',
                 element = isFooter ? 'footerElement' : 'headerElement',
+                colgroup = $(this.element).find('colgroup:first'),
                 wrapperClasses = [
                     classNames.innerWrapper,
                     isFooter ? classNames.innerWrapperFoot : classNames.innerWrapperHead
@@ -160,7 +231,7 @@
                         bottom: isFooter ? this.settings.bottom : 'auto',
                         position: 'fixed',
                         top: !isFooter ? this.settings.top : 'auto',
-                        'z-index': 1000,
+                        'z-index': this.settings.zIndex,
                     }).addClass(wrapperClasses.join(' '))
                 )
                 .wrap(function() {
@@ -171,6 +242,16 @@
                     return '';
                 }.bind(this)).parents('.' + classNames.innerWrapper)
                 .css('display', 'none')[insertAction](this.element)[0];
+
+            /**
+                Support use of colgroup to maintain cell sizes on cloned and
+                fixed header/footer elements.
+
+                * Valid with tables only
+             */
+            if (colgroup) {
+                colgroup.clone(false).appendTo($(this[element].stickyClone).find('table'));
+            }
         },
 
         /**
@@ -185,7 +266,7 @@
         stick: function(elem) {
             var settings = this.settings,
                 selector = elem.isFooter ? settings.footerSelector : settings.headerSelector,
-                width = $(elem).parents('.sticky-header-footer_wrapper:first').width() + 'px';
+                width = $(elem).parents('.'.concat(classNames.outerWrapper + ':first')).width() + 'px';
 
             swapNodes(
                 elem,
@@ -242,7 +323,8 @@
                     !this.isVisible()) {
                     this.unstick.call(this, footer);
                 }
-            } else {
+            }
+            else {
 
                 /**
                     Stick this sticky-header-footer's footer element if:
@@ -281,7 +363,8 @@
                     bodyRect.bottom < headAdjust + headRect.height / 2) {
                     this.unstick.call(this, header);
                 }
-            } else {
+            }
+            else {
 
                 /**
                     Stick this sticky-header-footer's header element if:
@@ -296,33 +379,14 @@
         },
 
         /**
-         *  Maintains the width of cloned elements when window is resized.
-         *
-         *  @method watchResize
-         *  @parameter {UIEvent} jQuery resize Event object with injected
-         *                       instance reference.
-         */
-        watchResize: function( /*event*/ ) {
-            var width = this.element.getBoundingClientRect().width;
-
-            if (!!this.headerElement) {
-                this.headerElement.stickyClone.style.width = width + 'px';
-            }
-
-            if (!!this.footerElement) {
-                this.footerElement.stickyClone.style.width = width + 'px';
-            }
-        },
-
-        /**
          *  Delegates scroll event handling to specific header
          *  and footer DOM manipulation methods.
          *
-         *  @method watchScroll
+         *  @method watchHeaderFooter
          *  @parameter {UIEvent} jQuery scroll Event object with injected
          *                       instance reference.
          */
-        watchScroll: function( /*event*/ ) {
+        watchHeaderFooter: function( /*event*/ ) {
             if (!!this.footerElement) {
                 this.watchFooter(this.footerElement);
             }
@@ -330,17 +394,6 @@
             if (!!this.headerElement) {
                 this.watchHeader(this.headerElement);
             }
-        },
-
-        /**
-         *  Handle any required tear down.
-         *   - Remove scroll event handler
-         *
-         *  @method tearDown
-         */
-        tearDown: function() {
-            window.removeEventListener('scroll', this._scrollHandler);
-            window.removeEventListener('resize', this._resizeHandler);
         }
     });
 
@@ -348,12 +401,17 @@
         Lightweight wrapper around the constructor,
         preventing multiple instantiations.
     */
-    $.fn[pluginName] = function(options) {
-        return this.each(function() {
-            if (!$.data(this, 'plugin_' + pluginName)) {
-                $.data(this, 'plugin_' + pluginName, new StickyHeaderFooter(this, options));
-            }
-        });
+    $.fn[pluginName] = function(methodOrOptions) {
+        if (methods[methodOrOptions]) {
+            return methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1));
+        }
+        else {
+            return this.each(function() {
+                if (!$.data(this, 'plugin_' + pluginName)) {
+                    $.data(this, 'plugin_' + pluginName, new StickyHeaderFooter(this, methodOrOptions));
+                }
+            });
+        }
     };
 
 })(jQuery, window, document);
