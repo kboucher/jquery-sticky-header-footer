@@ -1,11 +1,3 @@
-/*
- *  jquery-sticky-header-footer - v1.2.0
- *  jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
- *  https://github.com/kboucher
- *
- *  Made by Kevin Boucher
- *  Under MIT License
- */
 /**
  *  jquery-sticky-header-footer
  *  Lightweight jQuery plugin providing sticky header and footer functionality for tables and lists.
@@ -61,8 +53,8 @@
                 window.removeEventListener('scroll', this._scrollHandler);
 
                 /**
-                  *  Fix for Chrome rendering bug (see above)
-                  */
+                 *  Fix for Chrome rendering bug (see above)
+                 */
                 window.removeEventListener('scroll', this._scrollStopHandler);
 
                 /**
@@ -83,7 +75,7 @@
 
             var last, deferTimer;
 
-            return function () {
+            return function() {
                 var context = scope || this,
                     now = +new Date(),
                     args = arguments;
@@ -91,11 +83,12 @@
                 if (last && now < last + threshhold) {
                     // hold on to it
                     clearTimeout(deferTimer);
-                    deferTimer = setTimeout(function () {
+                    deferTimer = setTimeout(function() {
                         last = now;
                         fn.apply(context, args);
                     }, threshhold);
-                } else {
+                }
+                else {
                     last = now;
                     fn.apply(context, args);
                 }
@@ -104,10 +97,11 @@
         debounce = function(fn, delay) {
             var timer = null;
 
-            return function () {
-                var context = this, args = arguments;
+            return function() {
+                var context = this,
+                    args = arguments;
                 clearTimeout(timer);
-                timer = setTimeout(function () {
+                timer = setTimeout(function() {
                     fn.apply(context, args);
                 }, delay);
             };
@@ -138,10 +132,10 @@
     $.extend(StickyHeaderFooter.prototype, {
 
         /**
-        *  Initializes DOM and sets event listeners.
-        *
-        *  @method init
-        */
+         *  Initializes DOM and sets event listeners.
+         *
+         *  @method init
+         */
         init: function() {
             var throttleRate = 66;
 
@@ -196,7 +190,8 @@
                  */
                 try {
                     document.dispatchEvent(new Event('scroll'));
-                } catch (e) {}
+                }
+                catch (e) {}
             }
         },
 
@@ -231,16 +226,14 @@
                         'z-index': this.settings.zIndex,
                     }).addClass(wrapperClasses.join(' '))
                 )
-                .wrap(function () {
-                        var classNames = this.element.getAttribute('class');
-                        if (this.isTable) {
-                            return $('<table></table>').addClass(classNames);
-                        }
-                        return '';
-                    }.bind(this)
-                ).parents('.' + classNames.innerWrapper)
-                .css('display', 'none')
-                [insertAction](this.element)[0];
+                .wrap(function() {
+                    var classNames = this.element.getAttribute('class');
+                    if (this.isTable) {
+                        return $('<table></table>').addClass(classNames);
+                    }
+                    return '';
+                }.bind(this)).parents('.' + classNames.innerWrapper)
+                .css('display', 'none')[insertAction](this.element)[0];
 
             /**
                 Support use of colgroup to maintain cell sizes on cloned and
@@ -254,14 +247,14 @@
         },
 
         /**
-        *  Swaps clone and source elements and displays clone container.
-        *  Also sets width to overcome deficiency when element is
-        *  instantiated in a non-visible state.
-        *  ("0px" width is applied in setupHeaderFooter().)
-        *
-        *  @method stick
-        *  @param {HTMLElement} The header or footer item to be stuck.
-        */
+         *  Swaps clone and source elements and displays clone container.
+         *  Also sets width to overcome deficiency when element is
+         *  instantiated in a non-visible state.
+         *  ("0px" width is applied in setupHeaderFooter().)
+         *
+         *  @method stick
+         *  @param {HTMLElement} The header or footer item to be stuck.
+         */
         stick: function(elem) {
             var settings = this.settings,
                 selector = elem.isFooter ? settings.footerSelector : settings.headerSelector,
@@ -278,11 +271,11 @@
         },
 
         /**
-        *  Swaps clone and source back to original location and hides clone container.
-        *
-        *  @method unstick
-        *  @param {HTMLElement} The header or footer item to be unstuck.
-        */
+         *  Swaps clone and source back to original location and hides clone container.
+         *
+         *  @method unstick
+         *  @param {HTMLElement} The header or footer item to be unstuck.
+         */
         unstick: function(elem) {
             var settings = this.settings,
                 selector = elem.isFooter ? settings.footerSelector : settings.headerSelector;
@@ -297,12 +290,12 @@
         },
 
         /**
-        *  If sticky footer is enabled, this method will be called
-        *  on scroll to make any required updates to the footer.
-        *
-        *  @method watchFooter
-        *  @param {HTMLElement} The sticky footer item to be processed.
-        */
+         *  If sticky footer is enabled, this method will be called
+         *  on scroll to make any required updates to the footer.
+         *
+         *  @method watchFooter
+         *  @param {HTMLElement} The sticky footer item to be processed.
+         */
         watchFooter: function(footer) {
             var bodyRect = this.bodyElement.getBoundingClientRect(),
                 footAdjust = parseInt(this.settings.bottom, 10),
@@ -317,12 +310,13 @@
                         2. Header has scrolled to the footer, OR ...
                         3. Sticky Header Footer element is no longer visible in the viewport
                  */
-                 if (bodyRect.bottom < viewHeight - footAdjust - footRect.height ||
-                     bodyRect.top > viewHeight - footAdjust ||
-                     !this.isVisible()) {
-                        this.unstick.call(this, footer);
-                 }
-            } else {
+                if (bodyRect.bottom < viewHeight - footAdjust - footRect.height ||
+                    bodyRect.top > viewHeight - footAdjust ||
+                    !this.isVisible()) {
+                    this.unstick.call(this, footer);
+                }
+            }
+            else {
 
                 /**
                     Stick this sticky-header-footer's footer element if:
@@ -333,18 +327,18 @@
                 if (bodyRect.bottom > viewHeight - footAdjust - footRect.height &&
                     bodyRect.top < viewHeight - footAdjust &&
                     this.isVisible()) {
-                        this.stick.call(this, footer);
+                    this.stick.call(this, footer);
                 }
             }
         },
 
         /**
-        *  If sticky footer is enabled, this method will be called
-        *  on scroll to make any required updates to the footer.
-        *
-        *  @method watchHeader
-        *  @param {HTMLElement} The sticky header item to be processed.
-        */
+         *  If sticky footer is enabled, this method will be called
+         *  on scroll to make any required updates to the footer.
+         *
+         *  @method watchHeader
+         *  @param {HTMLElement} The sticky header item to be processed.
+         */
         watchHeader: function(header) {
             var bodyRect = this.bodyElement.getBoundingClientRect(),
                 headAdjust = parseInt(this.settings.top, 10),
@@ -359,9 +353,10 @@
                  */
                 if (bodyRect.top > headAdjust + headRect.height ||
                     bodyRect.bottom < headAdjust + headRect.height / 2) {
-                        this.unstick.call(this, header);
+                    this.unstick.call(this, header);
                 }
-            } else {
+            }
+            else {
 
                 /**
                     Stick this sticky-header-footer's header element if:
@@ -370,7 +365,7 @@
                  */
                 if (bodyRect.top <= headAdjust + headRect.height &&
                     bodyRect.bottom > headAdjust + headRect.height) {
-                        this.stick.call(this, header);
+                    this.stick.call(this, header);
                 }
             }
         },
@@ -383,7 +378,7 @@
          *  @parameter {UIEvent} jQuery scroll Event object with injected
          *                       instance reference.
          */
-        watchHeaderFooter: function(/*event*/) {
+        watchHeaderFooter: function( /*event*/ ) {
             if (!!this.footerElement) {
                 this.watchFooter(this.footerElement);
             }
@@ -401,7 +396,8 @@
     $.fn[pluginName] = function(methodOrOptions) {
         if (methods[methodOrOptions]) {
             return methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1));
-        } else {
+        }
+        else {
             return this.each(function() {
                 if (!$.data(this, 'plugin_' + pluginName)) {
                     $.data(this, 'plugin_' + pluginName, new StickyHeaderFooter(this, methodOrOptions));
