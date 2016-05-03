@@ -184,6 +184,7 @@
         setupHeaderFooter: function(isFooter) {
             var insertAction = isFooter ? 'insertAfter' : 'insertBefore',
                 element = isFooter ? 'footerElement' : 'headerElement',
+                colgroup = $(this.element).find('colgroup:first'),
                 wrapperClasses = [
                     classNames.innerWrapper,
                     isFooter ? classNames.innerWrapperFoot : classNames.innerWrapperHead
@@ -215,6 +216,16 @@
                 ).parents('.' + classNames.innerWrapper)
                 .css('display', 'none')
                 [insertAction](this.element)[0];
+
+            /**
+                Support use of colgroup to maintain cell sizes on cloned and
+                fixed header/footer elements.
+
+                * Valid with tables only
+             */
+            if (colgroup) {
+                colgroup.clone(false).appendTo($(this[element].stickyClone).find('table'));
+            }
         },
 
         /**

@@ -20,6 +20,11 @@ Sticky Header Footer makes a clone of the desired sticky header and/or footer an
 For best results when applying Sticky Header Footer to a table, pass the table itself as the element to be processed.
 
     <table>                                         <!-- Pass this element to the plugin -->
+        <colgroup>                                  <!-- Use colgroup to maintain th layout -->
+            <col style="width: 33.3%">
+            <col style="width: 33.3%">
+            <col style="width: 33.3%">
+        </colgroup>
         <thead>                                     <!-- Header element (by default) -->
             <tr>
                 <th>Header text</th>
