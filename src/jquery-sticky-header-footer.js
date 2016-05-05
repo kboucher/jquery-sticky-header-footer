@@ -87,8 +87,7 @@
                         last = now;
                         fn.apply(context, args);
                     }, threshhold);
-                }
-                else {
+                } else {
                     last = now;
                     fn.apply(context, args);
                 }
@@ -149,6 +148,7 @@
                     this.setupHeaderFooter(true);
                     this.footerElement.isFooter = true;
                 }
+
                 if (this.headerElement) {
                     this.setupHeaderFooter();
                 }
@@ -190,8 +190,7 @@
                  */
                 try {
                     document.dispatchEvent(new Event('scroll'));
-                }
-                catch (e) {}
+                } catch (e) {}
             }
         },
 
@@ -315,8 +314,7 @@
                     !this.isVisible()) {
                     this.unstick.call(this, footer);
                 }
-            }
-            else {
+            } else {
 
                 /**
                     Stick this sticky-header-footer's footer element if:
@@ -355,8 +353,7 @@
                     bodyRect.bottom < headAdjust + headRect.height / 2) {
                     this.unstick.call(this, header);
                 }
-            }
-            else {
+            } else {
 
                 /**
                     Stick this sticky-header-footer's header element if:
@@ -378,7 +375,7 @@
          *  @parameter {UIEvent} jQuery scroll Event object with injected
          *                       instance reference.
          */
-        watchHeaderFooter: function( /*event*/ ) {
+        watchHeaderFooter: function(/*event*/) {
             if (!!this.footerElement) {
                 this.watchFooter(this.footerElement);
             }
@@ -386,6 +383,18 @@
             if (!!this.headerElement) {
                 this.watchHeader(this.headerElement);
             }
+        },
+
+        /**
+            Call `methods.tearDown()`
+
+            Maintains backwards compatitibility after exposing
+            tearDown() as a method.
+
+            @method tearDown
+         */
+        tearDown: function() {
+            methods.tearDown();
         }
     });
 
@@ -396,8 +405,7 @@
     $.fn[pluginName] = function(methodOrOptions) {
         if (methods[methodOrOptions]) {
             return methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1));
-        }
-        else {
+        } else {
             return this.each(function() {
                 if (!$.data(this, 'plugin_' + pluginName)) {
                     $.data(this, 'plugin_' + pluginName, new StickyHeaderFooter(this, methodOrOptions));
