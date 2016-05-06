@@ -1,5 +1,5 @@
 /*
- *  jquery-sticky-header-footer - v1.2.2
+ *  jquery-sticky-header-footer - v1.2.4
  *  jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
  *  https://github.com/kboucher
  *
@@ -28,7 +28,8 @@
  *  @author     Kevin Boucher
  *  @license    Dual licensed under MIT and GNU GPL
  */
-;(function($, window, document, undefined) {
+;
+(function($, window, document, undefined) {
     'use strict';
 
     // Defaults and constants
@@ -363,8 +364,7 @@
                     bodyRect.bottom < headAdjust + headRect.height / 2) {
                     this.unstick.call(this, header);
                 }
-            }
-            else {
+            } else {
 
                 /**
                     Stick this sticky-header-footer's header element if:
@@ -386,7 +386,7 @@
          *  @parameter {UIEvent} jQuery scroll Event object with injected
          *                       instance reference.
          */
-        watchHeaderFooter: function( /*event*/ ) {
+        watchHeaderFooter: function(/*event*/) {
             if (!!this.footerElement) {
                 this.watchFooter(this.footerElement);
             }
@@ -394,6 +394,18 @@
             if (!!this.headerElement) {
                 this.watchHeader(this.headerElement);
             }
+        },
+
+        /**
+            Call `methods.tearDown()`
+
+            Maintains backwards compatitibility after exposing
+            tearDown() as a method.
+
+            @method tearDown
+         */
+        tearDown: function() {
+            methods.tearDown();
         }
     });
 
