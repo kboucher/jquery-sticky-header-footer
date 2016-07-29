@@ -48,7 +48,8 @@
                 @method tearDown
              */
             tearDown: function() {
-                var element = this.first();
+                var that = this;
+                var $element = $(this.element);
 
                 window.removeEventListener('scroll', this._scrollHandler);
 
@@ -60,8 +61,17 @@
                 /**
                     Remove added DOM elements and plugin data
                  */
-                $('.' + classNames.outerWrapper).before(element).remove();
-                element.removeData('plugin_' + pluginName);
+                $.each(['footerElement', 'headerElement'], function(idx, val) {
+                    var element = that[val];
+                    if (element) {
+                        if (element.isStuck) {
+                            that.unstick.call(that, element);
+                        }
+                        $(element.stickyClone).remove();
+                    }
+                });
+                $element.closest('.' + classNames.outerWrapper).before($element[0]).remove();
+                $element.removeData('plugin_' + pluginName);
             }
         },
         swapNodes = function(a, b) {
