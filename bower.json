@@ -1,17 +1,17 @@
 {
-    "name": "jquery-sticky-header-footer",
-    "version": "1.2.5",
-    "homepage": "https://github.com/kboucher/jquery-sticky-header-footer",
-    "authors": [
-        "Kevin Boucher <kevin@kevinboucher.com>"
-    ],
-    "description": "jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.",
-    "main": "src/jquery-sticky-header-footer.js",
-    "keywords": [
-        "jquery-plugin",
-        "jquery",
-        "ui",
-        "sticky"
-    ],
-    "license": "MIT"
+  "name": "jquery-sticky-header-footer",
+  "version": "1.2.6",
+  "homepage": "https://github.com/kboucher/jquery-sticky-header-footer",
+  "authors": [
+    "Kevin Boucher <kevin@kevinboucher.com>"
+  ],
+  "description": "jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.",
+  "main": "src/jquery-sticky-header-footer.js",
+  "keywords": [
+    "jquery-plugin",
+    "jquery",
+    "ui",
+    "sticky"
+  ],
+  "license": "MIT"
 }
