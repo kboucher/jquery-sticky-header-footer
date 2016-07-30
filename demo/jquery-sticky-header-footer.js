@@ -1,5 +1,5 @@
 /*
- *  jquery-sticky-header-footer - v1.2.4
+ *  jquery-sticky-header-footer - v1.2.6
  *  jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
  *  https://github.com/kboucher
  *
@@ -28,8 +28,7 @@
  *  @author     Kevin Boucher
  *  @license    Dual licensed under MIT and GNU GPL
  */
-;
-(function($, window, document, undefined) {
+;(function($, window, document, undefined) {
     'use strict';
 
     // Defaults and constants
@@ -43,10 +42,12 @@
             zIndex: 10
         },
         classNames = {
-            outerWrapper: 'sticky-header-footer_wrapper',
             innerWrapper: 'sticky-header-footer_sticky-wrapper',
             innerWrapperHead: 'sticky-header-footer_sticky-header',
             innerWrapperFoot: 'sticky-header-footer_sticky-footer',
+            outerWrapper: 'sticky-header-footer_wrapper',
+            originalFooter: 'sticky-header-footer_original-footer',
+            originalHeader: 'sticky-header-footer_original-header'
         },
         methods = {
 
@@ -57,7 +58,8 @@
                 @method tearDown
              */
             tearDown: function() {
-                var element = this.first();
+                var that = this;
+                var $element = $(this.element);
 
                 window.removeEventListener('scroll', this._scrollHandler);
 
@@ -69,8 +71,17 @@
                 /**
                     Remove added DOM elements and plugin data
                  */
-                $('.' + classNames.outerWrapper).before(element).remove();
-                element.removeData('plugin_' + pluginName);
+                $.each([this.footerElement, this.headerElement], function(idx, val) {
+                    var element = that[val];
+                    if (element) {
+                        if (element.isStuck) {
+                            that.unstick.call(that, element);
+                        }
+                        $(element.stickyClone).remove();
+                    }
+                });
+                $element.closest('.' + classNames.outerWrapper).before($element[0]).remove();
+                $element.removeData('plugin_' + pluginName);
             }
         },
         swapNodes = function(a, b) {
@@ -96,8 +107,7 @@
                         last = now;
                         fn.apply(context, args);
                     }, threshhold);
-                }
-                else {
+                } else {
                     last = now;
                     fn.apply(context, args);
                 }
@@ -158,6 +168,7 @@
                     this.setupHeaderFooter(true);
                     this.footerElement.isFooter = true;
                 }
+
                 if (this.headerElement) {
                     this.setupHeaderFooter();
                 }
@@ -199,8 +210,7 @@
                  */
                 try {
                     document.dispatchEvent(new Event('scroll'));
-                }
-                catch (e) {}
+                } catch (e) {}
             }
         },
 
@@ -214,10 +224,19 @@
             var insertAction = isFooter ? 'insertAfter' : 'insertBefore',
                 element = isFooter ? 'footerElement' : 'headerElement',
                 colgroup = $(this.element).find('colgroup:first'),
+                originalClassName = isFooter ?
+                    classNames.originalFooter :
+                    classNames.originalHeader,
                 wrapperClasses = [
                     classNames.innerWrapper,
                     isFooter ? classNames.innerWrapperFoot : classNames.innerWrapperHead
                 ];
+
+            /**
+                Decorate original header and footer elements to
+                differentiate them from clones at runtime.
+             */
+            $(this[element]).addClass(originalClassName);
 
             /**
                 1. Create and store header/footer clone
@@ -324,8 +343,7 @@
                     !this.isVisible()) {
                     this.unstick.call(this, footer);
                 }
-            }
-            else {
+            } else {
 
                 /**
                     Stick this sticky-header-footer's footer element if:
@@ -405,7 +423,7 @@
             @method tearDown
          */
         tearDown: function() {
-            methods.tearDown();
+            methods.tearDown.call(this);
         }
     });
 
@@ -416,8 +434,7 @@
     $.fn[pluginName] = function(methodOrOptions) {
         if (methods[methodOrOptions]) {
             return methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1));
-        }
-        else {
+        } else {
             return this.each(function() {
                 if (!$.data(this, 'plugin_' + pluginName)) {
                     $.data(this, 'plugin_' + pluginName, new StickyHeaderFooter(this, methodOrOptions));

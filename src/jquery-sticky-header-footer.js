@@ -34,10 +34,12 @@
             zIndex: 10
         },
         classNames = {
-            outerWrapper: 'sticky-header-footer_wrapper',
             innerWrapper: 'sticky-header-footer_sticky-wrapper',
             innerWrapperHead: 'sticky-header-footer_sticky-header',
             innerWrapperFoot: 'sticky-header-footer_sticky-footer',
+            outerWrapper: 'sticky-header-footer_wrapper',
+            originalFooter: 'sticky-header-footer_original-footer',
+            originalHeader: 'sticky-header-footer_original-header'
         },
         methods = {
 
@@ -61,7 +63,7 @@
                 /**
                     Remove added DOM elements and plugin data
                  */
-                $.each(['footerElement', 'headerElement'], function(idx, val) {
+                $.each([this.footerElement, this.headerElement], function(idx, val) {
                     var element = that[val];
                     if (element) {
                         if (element.isStuck) {
@@ -214,10 +216,19 @@
             var insertAction = isFooter ? 'insertAfter' : 'insertBefore',
                 element = isFooter ? 'footerElement' : 'headerElement',
                 colgroup = $(this.element).find('colgroup:first'),
+                originalClassName = isFooter ?
+                    classNames.originalFooter :
+                    classNames.originalHeader,
                 wrapperClasses = [
                     classNames.innerWrapper,
                     isFooter ? classNames.innerWrapperFoot : classNames.innerWrapperHead
                 ];
+
+            /**
+                Decorate original header and footer elements to
+                differentiate them from clones at runtime.
+             */
+            $(this[element]).addClass(originalClassName);
 
             /**
                 1. Create and store header/footer clone
