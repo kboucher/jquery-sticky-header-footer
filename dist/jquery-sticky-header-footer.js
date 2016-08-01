@@ -71,8 +71,7 @@
                 /**
                     Remove added DOM elements and plugin data
                  */
-                $.each([this.footerElement, this.headerElement], function(idx, val) {
-                    var element = that[val];
+                $.each([this.footerElement, this.headerElement], function(idx, element) {
                     if (element) {
                         if (element.isStuck) {
                             that.unstick.call(that, element);
