@@ -1,5 +1,5 @@
 /*
- *  jquery-sticky-header-footer - v1.2.6
+ *  jquery-sticky-header-footer - v1.2.7
  *  jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
  *  https://github.com/kboucher
  *
@@ -71,8 +71,7 @@
                 /**
                     Remove added DOM elements and plugin data
                  */
-                $.each([this.footerElement, this.headerElement], function(idx, val) {
-                    var element = that[val];
+                $.each([this.footerElement, this.headerElement], function(idx, element) {
                     if (element) {
                         if (element.isStuck) {
                             that.unstick.call(that, element);
@@ -233,12 +232,6 @@
                 ];
 
             /**
-                Decorate original header and footer elements to
-                differentiate them from clones at runtime.
-             */
-            $(this[element]).addClass(originalClassName);
-
-            /**
                 1. Create and store header/footer clone
                 2. Wrap with sticky-header-footer DIV
                 3. Conditionally wrap with TABLE (THEAD/TFOOT only)
@@ -262,6 +255,12 @@
                     return '';
                 }.bind(this)).parents('.' + classNames.innerWrapper)
                 .css('display', 'none')[insertAction](this.element)[0];
+
+            /**
+                Decorate original header and footer elements to
+                differentiate them from clones at runtime.
+             */
+            $(this[element]).addClass(originalClassName);
 
             /**
                 Support use of colgroup to maintain cell sizes on cloned and
