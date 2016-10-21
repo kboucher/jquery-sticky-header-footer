@@ -50,23 +50,27 @@
                 @method tearDown
              */
             tearDown: function() {
-                var that = this;
-                var $element = $(this.element);
+                var $instance = this.data()['plugin_' + pluginName];
+                var $element = this;
 
-                window.removeEventListener('scroll', this._scrollHandler);
+                if(!$instance) {
+                    return;
+                }
+
+                window.removeEventListener('scroll', $instance._scrollHandler);
 
                 /**
                  *  Fix for Chrome rendering bug (see above)
                  */
-                window.removeEventListener('scroll', this._scrollStopHandler);
+                window.removeEventListener('scroll', $instance._scrollStopHandler);
 
                 /**
                     Remove added DOM elements and plugin data
                  */
-                $.each([this.footerElement, this.headerElement], function(idx, element) {
+                $.each([$instance.footerElement, $instance.headerElement], function(idx, element) {
                     if (element) {
                         if (element.isStuck) {
-                            that.unstick.call(that, element);
+                            $instance.unstick.call($instance, element);
                         }
                         $(element.stickyClone).remove();
                     }
