@@ -58,8 +58,9 @@
                 @method tearDown
              */
             tearDown: function() {
-                var $instance = this.data()['plugin_' + pluginName];
-                var $element = this;
+                var $this = $(this);
+                var $instance = $this.data()['plugin_' + pluginName];
+                var $element = $this;
 
                 if(!$instance) {
                     return;
