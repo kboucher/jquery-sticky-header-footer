@@ -1,5 +1,5 @@
 /*
- *  jquery-sticky-header-footer - v1.2.10
+ *  jquery-sticky-header-footer - v1.2.11
  *  jQuery plugin that dynamically sticks content headers and footers to the top and bottom of viewport.
  *  https://github.com/kboucher
  *
@@ -67,6 +67,8 @@
                 }
 
                 window.removeEventListener('scroll', $instance._scrollHandler);
+                window.removeEventListener('resize', $instance._resizeHandlerHandler);
+                window.removeEventListener('orientationchange', $instance._orientationHandler);
 
                 /**
                  *  Fix for Chrome rendering bug (see above)
@@ -148,6 +150,9 @@
         this._defaults = defaults;
         this._name = pluginName;
         this._scrollHandler = null;
+        this._resizeHandler = null;
+        this._orientationHandler = null;
+        this._width = null;
 
         this.init();
     }
@@ -208,9 +213,22 @@
                 );
 
                 /**
+                 *  Resizes sticky elements as needed on resize or orientation change.
+                 *
+                 */
+                window.addEventListener(
+                    'resize',
+                    this._resizeHandler = throttle(this.watchParentWidth.bind(this), throttleRate)
+                );
+                window.addEventListener(
+                    'orientationchange',
+                    this._orientationHandler = this.watchParentWidth.bind(this)
+                );
+
+                /**
                  *  Trigger scroll event to initialize sticky header/footer positions.
                  *
-                 *  - Wrapped in try block to overcome bug in IE (RET-12449)
+                 *  - Wrapped in try block to overcome bug in IE
                  */
                 try {
                     document.dispatchEvent(new Event('scroll'));
@@ -290,16 +308,20 @@
         stick: function(elem) {
             var settings = this.settings,
                 selector = elem.isFooter ? settings.footerSelector : settings.headerSelector,
-                width = $(elem).parents('.'.concat(classNames.outerWrapper + ':first')).width() + 'px';
+                width = $(elem).parents('.'.concat(classNames.outerWrapper + ':first')).width();
 
             swapNodes(
                 elem,
                 elem.stickyClone.querySelector(selector)
             );
 
+            // Store current width
+            this._width = width;
+
+            // Set element state and sticky styles
             elem.isStuck = true;
             elem.stickyClone.style.display = 'block';
-            elem.stickyClone.style.width = width;
+            elem.stickyClone.style.width = width + 'px';
         },
 
         /**
@@ -405,16 +427,35 @@
          *  and footer DOM manipulation methods.
          *
          *  @method watchHeaderFooter
-         *  @parameter {UIEvent} jQuery scroll Event object with injected
-         *                       instance reference.
          */
-        watchHeaderFooter: function(/*event*/) {
+        watchHeaderFooter: function(/* event */) {
             if (!!this.footerElement) {
                 this.watchFooter(this.footerElement);
             }
 
             if (!!this.headerElement) {
                 this.watchHeader(this.headerElement);
+            }
+        },
+
+        /**
+            Adjusts sticky elements' widths when container width changes.
+
+            @method watchParentWidth
+         */
+        watchParentWidth: function(/* event */) {
+            var width = $(this.element)
+                    .parents('.' + classNames.outerWrapper + ':first')
+                    .width();
+
+            if (this._width && this._width !== width) {
+                if (!!this.footerElement) {
+                    this.footerElement.stickyClone.style.width = width + 'px';
+                }
+
+                if (!!this.headerElement) {
+                    this.headerElement.stickyClone.style.width = width + 'px';
+                }
             }
         },
 
